@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { HeroesComponent } from './heroes/heroes.component';
 import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 import { HeroService } from './hero.service';
+import { MessagesComponent } from './messages/messages.component';
+import { MessageService } from './message.service';
 
 @NgModule({
   // Every component must be declared in exactly one NgModule.
@@ -13,6 +15,7 @@ import { HeroService } from './hero.service';
     AppComponent,
     HeroesComponent,
     HeroDetailComponent,
+    MessagesComponent,
   ],
   imports: [
     BrowserModule,
@@ -30,6 +33,7 @@ import { HeroService } from './hero.service';
   // https://angular.io/tutorial/toh-pt4#provide-the-heroservice
   providers: [
     HeroService,
+    MessageService,
   ],
   bootstrap: [AppComponent]
 })

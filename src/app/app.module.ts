@@ -8,6 +8,7 @@ import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 import { HeroService } from './hero.service';
 import { MessagesComponent } from './messages/messages.component';
 import { MessageService } from './message.service';
+import { AppRoutingModule } from './/app-routing.module';
 
 @NgModule({
   // Every component must be declared in exactly one NgModule.
@@ -19,7 +20,8 @@ import { MessageService } from './message.service';
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    AppRoutingModule
   ],
   // You must provide services in the dependency injection system
   // before Angular can inject it in a component.

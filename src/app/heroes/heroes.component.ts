@@ -10,7 +10,6 @@ import { HeroService } from '../hero.service';
 })
 export class HeroesComponent implements OnInit {
   heroes: Hero[];
-  selectedHero: Hero;
 
   // The parameter simultaneously defines a private heroService property
   // and identifies it as a HeroService injection site.
@@ -36,12 +35,5 @@ export class HeroesComponent implements OnInit {
     // Asynchronous approach.
     this.heroService.getHeroes()
       .subscribe(heroes => this.heroes = heroes);
-  }
-
-  /**
-    * onSelect assigns the hero selected to the selectedHero instance of the component.
-    */
-  onSelect(hero: Hero): void {
-    this.selectedHero = hero;
   }
 }

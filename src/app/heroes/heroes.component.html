@@ -1,19 +1,11 @@
 <h2>Heroes</h2>
-
-<!-- TODO: -->
-<!-- https://angular.io/tutorial/toh-pt5 -->
 <ul class="heroes">
   <!-- The *ngFor is Angular's repeater directive. -->
   <!-- It repeats the host element for each element in a list. -->
   <!-- You can toggle a CSS style class with a class binding. -->
-  <li *ngFor="let hero of heroes"
-    [class.selected]="hero === selectedHero"
-    (click)="onSelect(hero)">
-    <span class="badge">{{hero.id}}</span> {{hero.name}}
+  <li *ngFor="let hero of heroes">
+    <a routerLink="/detail/{{hero.id}}">
+      <span class="badge">{{hero.id}}</span> {{hero.name}}
+    </a>
   </li>
 </ul>
-
-<!-- [hero]="selectedHero" is an Angular property binding. -->
-<!-- It's a one way data binding from the selectedHero property -->
-<!-- of the HeroComponent to the hero property of the target element, -->
-<!-- which maps to the hero property of the HeroDetailComponent. -->

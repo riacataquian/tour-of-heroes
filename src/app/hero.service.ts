@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Hero } from './hero';
-import { HEROES } from './mock-heroes';
 import { MessageService } from './message.service';
+
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
+import { catchError, map, tap } from 'rxjs/operators';
 
 // The @Injectable() decorator tells Angular that this service might itself have injected dependencies.
 // Whether it does or it doesn't, it's *good practice* to keep the decorator.
@@ -12,17 +14,54 @@ export class HeroService {
   // This is a typical service-in-service scenario:
   // you inject the MessageService into the HeroService
   // which is injected to a component.
-  constructor(private messageService: MessageService) { }
+  constructor(
+    private http: HttpClient,
+    private messageService: MessageService,
+  ) { }
 
-  getHero(id: number): Observable<Hero> {
-    this.messageService.add(`HeroService: fetched hero id=${id}`);
-    return of(HEROES.find(hero => hero.id === id));
+  private heroesUrl = '/api/heroes'; // URL to web api
+
+  /** Log a HeroService message with the MessageService */
+  private log(message: string) {
+    this.messageService.add(`HeroServic: ${message}`);
   }
 
-  getHeroes(): Observable<Hero[]> {
-    this.messageService.add('HeroService: fetched heroes');
-    // of(HEROES) returns an Observable<Hero[]> type
-    // that emits a *single value*, the array of mock heroes.
-    return of(HEROES);
+  /** GET hero by id. Will 404 if id not found */
+  getHero(id: number): Observable<Hero> {
+    const url = `${this.heroesUrl}/${id}`;
+
+    return this.http.get<Hero>(url).pipe(
+      tap(_ => this.log(`fetched hero id=${id}`)),
+      catchError(this.handleError<Hero>(`getHero id=${id}`))
+    );
+  }
+
+  /** GET heroes from the server */
+  getHeroes (): Observable<Hero[]> {
+    return this.http.get<Hero[]>(this.heroesUrl)
+      .pipe(
+        tap(_ => this.log(`fetched heroes`)),
+        catchError(this.handleError('getHeroes', []))
+      );
+  }
+
+  /**
+   * Handle Http operation that failed.
+   * Let the app continue.
+   * @param operation - name of the operation that failed
+   * @param result - optional value to return as the observable result
+   */
+  private handleError<T> (operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+
+      // TODO: send the error to remote logging infrastructure
+      console.error(error); // log to console instead
+
+      // TODO: better job of transforming error for user consumption
+      this.log(`${operation} failed: ${error.message}`);
+
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
   }
 }

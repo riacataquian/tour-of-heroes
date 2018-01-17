@@ -7,6 +7,10 @@ import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
+const HTTP_OPTIONS = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
+
 // The @Injectable() decorator tells Angular that this service might itself have injected dependencies.
 // Whether it does or it doesn't, it's *good practice* to keep the decorator.
 @Injectable()
@@ -43,6 +47,14 @@ export class HeroService {
         tap(_ => this.log(`fetched heroes`)),
         catchError(this.handleError('getHeroes', []))
       );
+  }
+
+  /** PUT: update the hero on the server */
+  updateHero(hero: Hero): Observable<any> {
+    return this.http.put(this.heroesUrl, hero, HTTP_OPTIONS).pipe(
+      tap(_ => this.log(`update hero id=${hero.id}`)),
+      catchError(this.handleError<any>('updateHeroes'))
+    );
   }
 
   /**

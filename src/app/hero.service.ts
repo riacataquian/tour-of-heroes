@@ -63,6 +63,13 @@ export class HeroService {
       );
   }
 
+  getList(): Observable<Hero[]> {
+    return this.http.get<Hero[]>(this.heroesUrl);
+    // return this.http.get<Hero[]>(this.heroesUrl).pipe(
+    //   tap(_ => { console.error('tap' )})
+    // );
+  }
+
   /** POST: add a new hero to the server */
   addHero(hero: Hero): Observable<Hero> {
     return this.http.post<Hero>(this.heroesUrl, hero, HTTP_OPTIONS).pipe(

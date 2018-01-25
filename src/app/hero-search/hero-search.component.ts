@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import * as Rx from 'rxjs';
 
 import { Observable } from 'rxjs/Observable';
 import { Subject }    from 'rxjs/Subject';
 import { of }         from 'rxjs/observable/of';
+import { tap, map, catchError, startWith } from 'rxjs/operators';
 
 import {
    debounceTime, distinctUntilChanged, switchMap
@@ -18,18 +20,10 @@ import { HeroService } from '../hero.service';
 })
 export class HeroSearchComponent implements OnInit {
   heroes$: Observable<Hero[]>;
+  contentState: Observable<string>;
   private searchTerms = new Subject<string>();
 
   constructor(private heroService: HeroService) {}
-
-  // Push a search term into the observable stream.
-  search(term: string): void {
-    // The searchTerms property is declared as an RxJS Subject.
-    // A Subject is both a source of observable values and an Observable itself.
-    // You can subscribe to a Subject as you would any Observable.
-    // You can also push values into that Observable by calling its next(value) method.
-    this.searchTerms.next(term);
-  }
 
   ngOnInit(): void {
     this.heroes$ = this.searchTerms.pipe(
@@ -49,5 +43,39 @@ export class HeroSearchComponent implements OnInit {
       // Unwanted results are simply discarded before they reach your application code.
       switchMap((term: string) => this.heroService.searchHeroes(term)),
     );
+
+    this.contentState = this.searchTerms.pipe(
+      map((term: string) => {
+        if (term === "") return 'LOADING';
+        return 'READY';
+      }),
+      catchError(() => 'ERROR'),
+      startWith('LOADING')
+    );
+  }
+
+  ngAfterViewInit() {
+    const source = Rx.Observable.timer(40 * 100, 40 * 100);
+
+    // REMARKS:
+    // This works but this doesn't load the heroes on the template.
+    this.heroes$ = source.pipe(
+      debounceTime(300),
+      tap(_ => console.error('tapping!')),
+      switchMap(() => this.heroService.searchHeroes('m')),
+      map((heroes: Hero[]) => {
+        console.error('heroes', heroes);
+        return heroes;
+      }),
+    );
+  }
+
+  // Push a search term into the observable stream.
+  search(term: string): void {
+    // The searchTerms property is declared as an RxJS Subject.
+    // A Subject is both a source of observable values and an Observable itself.
+    // You can subscribe to a Subject as you would any Observable.
+    // You can also push values into that Observable by calling its next(value) method.
+    this.searchTerms.next(term);
   }
 }
